@@ -44,7 +44,7 @@ def broadcast(message, sender):
                     ch3 += 1
             
             message = f'\n ### INFORMATION ####\n Hi {senderUser.nickname}! You are on channel {senderChannel}.\n 1) Finnish: {ch1} users\n 2) English: {ch2} users\n 3) Swedish: {ch3} users\n\n### INSTRUCTIONS ####\n - To switch channel, enter #channelID (e.g. #1)\n - To send a private message, start your message with to: nickname (e.g. to: joey hello)\n'
-            message = message.encode("ascii")
+            message = message.encode("utf-8")
             sender.send(message)
         elif any(s in message for s in ["#1", "#2", "#3"]): # CHANNEL SWITCH CASE
             
@@ -59,7 +59,7 @@ def broadcast(message, sender):
             
             print(f'Client {senderUser.nickname} moved to channel {senderChannel}')
             message = f'\nSwitched channel successfully! Welcome to the channel {senderChannel}. For more info and instructions, type #HELP\n'
-            message = message.encode("ascii")
+            message = message.encode("utf-8")
             sender.send(message)
         elif ("to: " in message): # PRIVATE MESSAGE CASE
         # check if the message is meant to be sent privately to someone
@@ -78,7 +78,7 @@ def broadcast(message, sender):
                             # The user can not send a private message to themselves.
                             userIndex = senderIndex
                             message = "Private message function failed: Can't send one to self."
-                            message = message.encode("ascii")
+                            message = message.encode("utf-8")
                             sender.send(message)
                             checker = 1
                             break
@@ -86,22 +86,22 @@ def broadcast(message, sender):
                         else:
                             userIndex = users.index(user)
                             privateMsg_client = clients[userIndex] # the corresponding client object
-                            message = message.encode("ascii")
+                            message = message.encode("utf-8")
                             privateMsg_client.send(message)
                             checker = 1
                             break               
                                 
                 if (checker == 0): # userIndex returns false if no corresponding user found
                     message = "No such user online"
-                    message = message.encode("ascii")
+                    message = message.encode("utf-8")
                     sender.send(message)
             else: # if the list equals to 1
                 message = "Private message function failed: No other users online."
-                message = message.encode("ascii")
+                message = message.encode("utf-8")
                 sender.send(message)
         else: # MESSAGE SENT BY A CLIENT IN A CHANNEL        
         # check which channel the message belongs to and only send it in that channel
-            message = message.encode("ascii")
+            message = message.encode("utf-8")
             
             # a list of the indexes in the clients that the msg should be sent to:
             sendTo = [] 
@@ -115,7 +115,7 @@ def broadcast(message, sender):
    
     else:
         # If it's a common message to everyone from the system, then the sender is None
-        message = message.encode("ascii")
+        message = message.encode("utf-8")
         for client in clients:
             client.send(message)
     
@@ -125,7 +125,7 @@ def clientHandler(client):
         try:
             # message is received --> broadcast it to the clients
             # 1024 bytes message decoded for string comparison in broadcast function
-            message = client.recv(1024).decode("ascii") 
+            message = client.recv(1024).decode("utf-8") 
             broadcast(message, client)
         except:
             # If the client produces an error --->
@@ -153,15 +153,15 @@ def receiveClientConnection():
         
         # ask the new user for a nickname & channel and once received,
         # add it on the list as an object
-        client.send('REQ_NICKNAME'.encode("ascii"))
-        clientNickname = client.recv(1024).decode("ascii")
+        client.send('REQ_NICKNAME'.encode("utf-8"))
+        clientNickname = client.recv(1024).decode("utf-8")
         
-        client.send('REQ_CHANNEL'.encode("ascii"))
-        clientChannel = client.recv(1024).decode("ascii")
+        client.send('REQ_CHANNEL'.encode("utf-8"))
+        clientChannel = client.recv(1024).decode("utf-8")
         if (clientChannel not in ["1", "2", "3"]):
             # error, default choice Finnish:
             errorMsg = "Error, not valid choice. Default choice: channel 1 (Finnish)."
-            client.send(errorMsg.encode("ascii"))
+            client.send(errorMsg.encode("utf-8"))
             clientChannel = 1
         
         # Add the new user in the users object list
@@ -172,7 +172,7 @@ def receiveClientConnection():
         
         # Printed to the new client only:
         welcomeMessage = f'Hi {clientNickname}! Welcome to the channel {clientChannel}. For more info and instructions, type #HELP\n'
-        client.send(welcomeMessage.encode("ascii"))
+        client.send(welcomeMessage.encode("utf-8"))
         
         # Printed on the channel to everyone but the new client:
         broadcast("{} joined!".format(clientNickname), client)

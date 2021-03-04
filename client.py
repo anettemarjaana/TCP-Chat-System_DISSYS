@@ -21,11 +21,11 @@ client.connect((HOST, PORT))
 def receiveMessages():
     while True:
         try:
-            message = client.recv(1024).decode("ascii")
+            message = client.recv(1024).decode("utf-8")
             if (message == 'REQ_NICKNAME'):
-                client.send(NICKNAME.encode("ascii"))
+                client.send(NICKNAME.encode("utf-8"))
             elif (message == 'REQ_CHANNEL'):
-                client.send(CHANNEL.encode("ascii"))
+                client.send(CHANNEL.encode("utf-8"))
             else:
                 # PRINT MESSAGE ONLY IN THE SELECTED CHANNEL
                 print(message)
@@ -36,7 +36,7 @@ def receiveMessages():
             
 def writeMessages():
     while True:
-        client.send(f'<{NICKNAME}> {input("")}'.encode("ascii"))
+        client.send(f'<{NICKNAME}> {input("")}'.encode("utf-8"))
         
 recThread = threading.Thread(target=receiveMessages)
 recThread.start()
